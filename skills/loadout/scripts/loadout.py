@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""setup-map: inventory a Claude Code setup and render it as a list, an HTML page or an Excalidraw board.
+"""loadout: inventory a Claude Code setup and render it as a list, an HTML page or an Excalidraw board.
 
 Usage:
-  setup_map.py session < session.json   save what the current session lists (built-in skills and agents)
-  setup_map.py list                     print every skill, plugin, MCP server and agent, grouped by author
-  setup_map.py html [--out FILE] [--open]
-  setup_map.py excalidraw [--out FILE]
-  setup_map.py known                    skill and agent names already found on disk
-  setup_map.py uncategorized            skills not yet placed in a topic (for the curation step)
-  setup_map.py config [--artifact-url URL]
+  loadout.py session < session.json   save what the current session lists (built-in skills and agents)
+  loadout.py list                     print every skill, plugin, MCP server and agent, grouped by author
+  loadout.py html [--out FILE] [--open]
+  loadout.py excalidraw [--out FILE]
+  loadout.py known                    skill and agent names already found on disk
+  loadout.py uncategorized            skills not yet placed in a topic (for the curation step)
+  loadout.py config [--artifact-url URL]
 
 Everything is read from ~/.claude and ~/.claude.json. Files are written only to the data folder
-(~/.claude/setup-map, or $SETUP_MAP_HOME) unless --out says otherwise. No network access.
+(~/.claude/loadout, or $LOADOUT_HOME) unless --out says otherwise. No network access.
 """
 import argparse
 import datetime
@@ -27,7 +27,7 @@ import cleanup  # noqa: E402
 import inventory  # noqa: E402
 
 ASSETS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets")
-DATA_DIR = os.path.expanduser(os.environ.get("SETUP_MAP_HOME", "~/.claude/setup-map"))
+DATA_DIR = os.path.expanduser(os.environ.get("LOADOUT_HOME", "~/.claude/loadout"))
 
 
 def path(name):
@@ -200,7 +200,7 @@ def render_excalidraw(out_file):
     card_w, card_h, gap, cols = 330, 92, 16, 5
     sec_w = cols * (card_w + gap) + gap
     x0, y = 40, 40
-    els.append(text(x0, y, "MY CLAUDE CODE SETUP", 36)); y += 56
+    els.append(text(x0, y, "MY CLAUDE CODE LOADOUT", 36)); y += 56
     els.append(text(x0, y, f"{len(items)} items · skills, plugins, MCP servers & agents · colour = author",
                     18, "#868e96")); y += 44
     lx = x0
@@ -272,11 +272,11 @@ def main():
     sub.add_parser("session", help="read the session's skill and agent list as JSON on stdin")
     sub.add_parser("list")
     h = sub.add_parser("html")
-    h.add_argument("--out", default=path("setup-map.html"))
+    h.add_argument("--out", default=path("loadout.html"))
     h.add_argument("--open", action="store_true", help="open the page in the default browser")
     h.add_argument("--artifact", action="store_true", help="leave out the document head, for an Artifact publish")
     e = sub.add_parser("excalidraw")
-    e.add_argument("--out", default=path("setup-map.excalidraw"))
+    e.add_argument("--out", default=path("loadout.excalidraw"))
     sub.add_parser("uncategorized")
     sub.add_parser("known", help="skill and agent names already found on disk")
     c = sub.add_parser("config")

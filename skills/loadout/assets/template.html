@@ -1,4 +1,4 @@
-<title>Setup Map</title>
+<title>Loadout</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: sticky search bar over a stream of topic sections; cards in an auto-fill grid; author colour is the one recurring signal. */
@@ -218,7 +218,7 @@ footer code { font-family: var(--font-mono); }
 <div class="wrap">
   <header class="intro">
     <div class="topline">
-      <h1>Setup Map</h1>
+      <h1>Loadout</h1>
       <nav class="switches" aria-label="Views">
         <a class="view-switch" id="to-map" href="#map">Map</a>
         <a class="view-switch" id="to-projects" href="#projects">Projects</a>
@@ -314,7 +314,7 @@ footer code { font-family: var(--font-mono); }
     el('li', {}, 'Whole setup:'),
     el('li', {}, el('b', { textContent: items.length }), ' items'),
     ...['skill', 'plugin', 'mcp', 'agent'].map((k) => el('li', {}, el('b', { textContent: byKind(k) }), ' ' + KIND_LABEL[k].toLowerCase())));
-  $('foot').append(`Generated ${DATA.generated} by the setup-map skill. Nothing on this page left your machine to build it.`);
+  $('foot').append(`Generated ${DATA.generated} by the loadout skill. Nothing on this page left your machine to build it.`);
 
   const authorCounts = (list) => {
     const m = new Map();

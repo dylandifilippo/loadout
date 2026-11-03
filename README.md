@@ -1,11 +1,12 @@
-# Setup Map
+# Loadout
 
-A Claude Code skill that maps your whole setup in one place: every skill, plugin, MCP server and
-agent, who made each one, what commands and arguments it offers, and which ones you could clean up.
+See what Claude Code carries into every session, and trim what eats your context.
 
-After a few months of installing plugins and skills, it gets hard to say what you have, where it came
-from, or why the same skill shows up twice. Setup Map reads your Claude Code folders and turns them
-into:
+Every skill, plugin, MCP server and agent you install adds its description to Claude's context, in
+every session or only in some projects. After a few months it gets hard to say what you have, where it
+came from, what loads where, or why the same skill shows up twice. Loadout reads your Claude Code
+folders and shows your whole loadout: who made each item, where it loads, the commands and arguments
+it offers, and what you could remove. It turns that into:
 
 - **A searchable page.** Search, filter by type or author, and open any card to see the command's
   variants (its declared arguments, the sub-commands a skill documents, every command and skill inside
@@ -28,34 +29,34 @@ Pick one.
 **Claude Code plugin**
 
 ```
-/plugin marketplace add dylandifilippo/setup-map
-/plugin install setup-map@setup-map
+/plugin marketplace add dylandifilippo/loadout
+/plugin install loadout@loadout
 ```
 
-Then run `/setup-map:setup-map`. Plugin skills are always prefixed with the plugin name.
+Then run `/loadout:loadout`. Plugin skills are always prefixed with the plugin name.
 
 **skills.sh**
 
 ```
-npx skills add dylandifilippo/setup-map -a claude-code
+npx skills add dylandifilippo/loadout -a claude-code
 ```
 
-Then run `/setup-map`. This needs Node 22.20 or newer.
+Then run `/loadout`. This needs Node 22.20 or newer.
 
 Requirements for both: Python 3.8 or newer (standard library only).
 
 ## Use
 
 ```
-/setup-map:setup-map              searchable HTML page, opened in your browser
-/setup-map:setup-map artifact     the same page as a private claude.ai Artifact
-/setup-map:setup-map excalidraw   Excalidraw board
-/setup-map:setup-map list         plain list in the terminal
-/setup-map:setup-map all          page and board
-/setup-map:setup-map organize     let Claude group your skills into topics
+/loadout:loadout              searchable HTML page, opened in your browser
+/loadout:loadout artifact     the same page as a private claude.ai Artifact
+/loadout:loadout excalidraw   Excalidraw board
+/loadout:loadout list         plain list in the terminal
+/loadout:loadout all          page and board
+/loadout:loadout organize     let Claude group your skills into topics
 ```
 
-With skills.sh, drop the prefix: `/setup-map artifact`, and so on. You can also just ask: "which of my
+With skills.sh, drop the prefix: `/loadout artifact`, and so on. You can also just ask: "which of my
 skills are installed twice?" or "what flags does /code-review take?"
 
 Without `organize`, skills are grouped by where they come from. `organize` asks Claude to sort them
@@ -63,7 +64,7 @@ into topics such as "Code review" or "Design", and remembers that for the next r
 
 ## What it reads and writes
 
-Setup Map only reads your setup. It does not install, remove or change anything, and it makes no
+Loadout only reads your setup. It does not install, remove or change anything, and it makes no
 network requests. The page it builds uses system fonts and loads nothing from the internet.
 
 It reads:
@@ -80,7 +81,7 @@ It reads:
 - for every project listed in `~/.claude.json` or recorded as a plugin's install project: its `.claude/` folder (skills, commands, agents,
   settings) and its `.mcp.json`. Worktrees under `.claude/worktrees/` are skipped.
 
-It writes only to `~/.claude/setup-map/` (set `SETUP_MAP_HOME` to change this), plus the Artifact
+It writes only to `~/.claude/loadout/` (set `LOADOUT_HOME` to change this), plus the Artifact
 copy, which Claude writes to its own scratch folder before publishing:
 
 | File | What it holds |
@@ -88,12 +89,12 @@ copy, which Claude writes to its own scratch folder before publishing:
 | `session.json` | Built-in skills and agents, which Claude passes from its own session list |
 | `curation.json` | Your topics and optional descriptions, notes and extra variants |
 | `config.json` | The Artifact link, if you published one |
-| `setup-map.html`, `setup-map.excalidraw` | The latest page and board |
+| `loadout.html`, `loadout.excalidraw` | The latest page and board |
 
 These files describe your own setup, including the names and paths of your projects. The Artifact is private when it is created; think twice before
 sharing it, because it lists the descriptions of your personal skills.
 
-Uninstalling the plugin does not remove `~/.claude/setup-map/`. Delete that folder yourself if you no
+Uninstalling the plugin does not remove `~/.claude/loadout/`. Delete that folder yourself if you no
 longer want it.
 
 ## How the numbers work
@@ -116,8 +117,8 @@ longer want it.
 
 ## Contributing
 
-Issues and pull requests are welcome. The code lives in `skills/setup-map/`: `scripts/inventory.py`
-reads the setup, `scripts/cleanup.py` finds duplicates, `scripts/setup_map.py` renders the outputs, and
+Issues and pull requests are welcome. The code lives in `skills/loadout/`: `scripts/inventory.py`
+reads the setup, `scripts/cleanup.py` finds duplicates, `scripts/loadout.py` renders the outputs, and
 `assets/` holds the page template and the shared defaults (known command variants and overlaps).
 
 Before opening a pull request, run `claude plugin validate . --strict` from the repository root.

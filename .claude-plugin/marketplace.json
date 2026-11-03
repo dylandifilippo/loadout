@@ -1,15 +1,15 @@
 {
-  "name": "setup-map",
-  "description": "Setup Map: a Claude Code skill that maps and cleans up your skills, plugins, MCP servers and agents.",
+  "name": "loadout",
+  "description": "Loadout: see what Claude Code loads into every session and trim what eats your context.",
   "owner": {
     "name": "Dylan Di Filippo",
     "url": "https://github.com/dylandifilippo"
   },
   "plugins": [
     {
-      "name": "setup-map",
+      "name": "loadout",
       "source": "./",
-      "description": "Map your Claude Code setup: every skill, plugin, MCP server and agent, who made it, its commands and variants, and which ones are installed twice or overlap."
+      "description": "See everything Claude Code loads into each session (skills, plugins, MCP servers, agents, per project) and trim what eats your context: duplicates, unused skills, heavy sources."
     }
   ]
 }

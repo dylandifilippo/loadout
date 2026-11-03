@@ -1,6 +1,6 @@
 """Read the local Claude Code setup and describe every skill, plugin, MCP server and agent in it.
 
-Read-only: nothing here writes outside the setup-map data folder, and nothing touches the network.
+Read-only: nothing here writes outside the loadout data folder, and nothing touches the network.
 """
 import glob
 import json

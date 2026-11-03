@@ -1,21 +1,22 @@
 {
-  "name": "setup-map",
+  "name": "loadout",
   "version": "0.1.0",
-  "description": "Map your Claude Code setup: every skill, plugin, MCP server and agent, who made it, its commands and variants, and which ones are installed twice or overlap.",
+  "description": "See everything Claude Code loads into each session (skills, plugins, MCP servers, agents, per project) and trim what eats your context: duplicates, unused skills, heavy sources.",
   "author": {
     "name": "Dylan Di Filippo",
     "url": "https://github.com/dylandifilippo"
   },
-  "homepage": "https://github.com/dylandifilippo/setup-map",
-  "repository": "https://github.com/dylandifilippo/setup-map",
+  "homepage": "https://github.com/dylandifilippo/loadout",
+  "repository": "https://github.com/dylandifilippo/loadout",
   "license": "MIT",
   "keywords": [
+    "context",
+    "context-management",
     "skills",
     "plugins",
-    "inventory",
-    "cleanup",
     "mcp",
-    "excalidraw"
+    "cleanup",
+    "inventory"
   ],
   "icon": ".claude-plugin/icon.png"
 }

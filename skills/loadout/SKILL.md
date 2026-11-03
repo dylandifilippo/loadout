@@ -1,21 +1,21 @@
 ---
-name: setup-map
-description: Map the user's Claude Code setup - every skill, plugin, MCP server and agent, who made each one, which projects load it, the commands and arguments it offers, and which ones are installed twice, overlap or weigh most in context. Renders a searchable HTML page (or a claude.ai Artifact), an Excalidraw board, or a plain list. Use when the user asks what skills or plugins they have, who made a skill, what is turned on in which project, what flags or variants a command takes, which skills are duplicated or waste context, what to clean up, or wants a map of their setup.
+name: loadout
+description: Show the user's Claude Code loadout - everything that loads into their sessions and eats context: every skill, plugin, MCP server and agent, who made each one, which projects load it, the commands and arguments it offers, and which ones are installed twice, overlap or weigh most in context. Renders a searchable HTML page (or a claude.ai Artifact), an Excalidraw board, or a plain list. Use when the user asks what skills or plugins they have, who made a skill, what is turned on in which project, what flags or variants a command takes, which skills are duplicated or waste context, what to clean up, how to free up context, or wants a map of their setup.
 argument-hint: "[html|artifact|excalidraw|list|all] [organize]"
 compatibility: Claude Code only (reads ~/.claude and ~/.claude.json). Needs Python 3.8+.
 license: MIT
-allowed-tools: Bash(python3 *setup_map.py*)
+allowed-tools: Bash(python3 *loadout.py*)
 ---
 
-# Setup Map
+# Loadout
 
 Every step runs one bundled script, read-only on the user's setup:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/setup_map.py" <command>
+python3 "${CLAUDE_SKILL_DIR}/scripts/loadout.py" <command>
 ```
 
-It writes only to its data folder, `~/.claude/setup-map/` (override with `SETUP_MAP_HOME`), or
+It writes only to its data folder, `~/.claude/loadout/` (override with `LOADOUT_HOME`), or
 to an `--out` path. It never touches the network, and the page it renders loads nothing from it.
 
 ## 1. Tell the script what this session lists
@@ -24,7 +24,7 @@ Built-in skills and agents are not on disk, so the script learns them from you. 
 it prints the skill and agent names it already found on disk.
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/setup_map.py" known
+python3 "${CLAUDE_SKILL_DIR}/scripts/loadout.py" known
 ```
 
 Then send the rest: every skill in your available-skills list whose name has **no colon** and is
@@ -35,13 +35,13 @@ next `__` in a tool name, such as `computer-use` or `plugin_figma_figma`); the s
 built-in ones it cannot find on disk.
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/setup_map.py" session <<'EOF'
+python3 "${CLAUDE_SKILL_DIR}/scripts/loadout.py" session <<'EOF'
 {"skills": [{"name": "code-review", "description": "…"}], "agents": [{"name": "Explore", "description": "…"}],
  "mcp": ["claude-in-chrome", "computer-use", "plugin_figma_figma"]}
 EOF
 ```
 
-Skip this step when `~/.claude/setup-map/session.json` was saved earlier in this conversation.
+Skip this step when `~/.claude/loadout/session.json` was saved earlier in this conversation.
 
 ## 2. Render what the user asked for
 
@@ -49,10 +49,10 @@ The argument picks the output. With none, render `html`.
 
 | Argument | Command | Then |
 |---|---|---|
-| `html` | `setup_map.py html --open` | Give the file path; it opened in the browser. |
+| `html` | `loadout.py html --open` | Give the file path; it opened in the browser. |
 | `artifact` | see below | Give the artifact link. |
-| `excalidraw` | `setup_map.py excalidraw` | Give the path; it opens at https://excalidraw.com (drag and drop) or in the Excalidraw VS Code extension. |
-| `list` | `setup_map.py list` | Show the output as is. |
+| `excalidraw` | `loadout.py excalidraw` | Give the path; it opens at https://excalidraw.com (drag and drop) or in the Excalidraw VS Code extension. |
+| `list` | `loadout.py list` | Show the output as is. |
 | `all` | `html --open`, then `excalidraw` | Both paths. |
 
 Pass `--out <path>` to `html` or `excalidraw` when the user names a location.
@@ -60,14 +60,14 @@ Pass `--out <path>` to `html` or `excalidraw` when the user names a location.
 **Artifact.** Only when the user asks for one and the Artifact tool is available in this session.
 Without the tool, say so in one line and render `html` instead.
 
-1. `setup_map.py config` prints the saved `artifact_url`, if any.
-2. `setup_map.py html --artifact --out <your scratchpad directory>/setup-map.html`.
+1. `loadout.py config` prints the saved `artifact_url`, if any.
+2. `loadout.py html --artifact --out <your scratchpad directory>/loadout.html`.
    `--artifact` leaves out the document head, which the Artifact skeleton provides. The page lists the
    user's skills and project paths, so never write it into the working directory or a repository; if
    this session has no scratchpad, ask the user where to put it.
 3. Publish that file with the Artifact tool. With a saved URL, publish to it (read it first if this
    conversation has not), so the link stays the same; on a first publish pass the icon `map`.
-4. After a first publish, save the link: `setup_map.py config --artifact-url <url>`.
+4. After a first publish, save the link: `loadout.py config --artifact-url <url>`.
 5. Tell the user the artifact is private, and that it lists the descriptions of their own skills,
    which they may not want to share.
 
@@ -77,11 +77,11 @@ Run this when the argument includes `organize`, or offer it in one line when `un
 reports many skills. It groups skills into topics, which is the only part a script cannot do.
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/setup_map.py" uncategorized
+python3 "${CLAUDE_SKILL_DIR}/scripts/loadout.py" uncategorized
 ```
 
 It prints the existing topics and every skill not yet in one. Edit
-`~/.claude/setup-map/curation.json` (create it if missing; keep every key already there):
+`~/.claude/loadout/curation.json` (create it if missing; keep every key already there):
 
 ```json
 {

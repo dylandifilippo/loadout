@@ -2,7 +2,7 @@
 
 ## 0.1.0 (2026-11-03)
 
-First release.
+First release. Published briefly as setup-map, renamed before anyone else installed it.
 
 - Inventory of standalone skills, custom commands, claude.ai synced skills, plugins (with their
   commands, skills, agents and MCP servers), MCP servers, agents, and every project Claude Code knows

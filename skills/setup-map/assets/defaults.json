@@ -1,0 +1,38 @@
+{
+  "usage": {
+    "/code-review": [
+      {"cmd": "/code-review", "note": "Review the current diff, at the level you used last time"},
+      {"cmd": "/code-review <low|medium|high|xhigh|max> [target]", "note": "Pick the effort level, from a few high-confidence findings to many, some uncertain. Target: a PR number, a branch or a path"},
+      {"cmd": "/code-review ultra [PR#]", "note": "Deep multi-agent review in the cloud. Billed, and only you can launch it"},
+      {"cmd": "--fix", "note": "Apply the findings to the working tree after the review"},
+      {"cmd": "--comment", "note": "Post the findings as inline PR comments"},
+      {"cmd": "--max-findings <n|all|default>", "note": "Report up to n findings, or all of them; the choice sticks until you pass default"},
+      {"cmd": "--post / --no-post", "note": "ultra on a GitHub.com PR: post the finished review as one comment, or hide that option"},
+      {"cmd": "/ultrareview", "note": "Deprecated alias of /code-review ultra"}
+    ],
+    "/loop": [
+      {"cmd": "/loop <interval> <prompt or /command>", "note": "Repeat on a fixed interval, e.g. /loop 5m /foo"},
+      {"cmd": "/loop <prompt or /command>", "note": "No interval: Claude picks the pace itself"}
+    ]
+  },
+  "overlaps": [
+    {"title": "Pull request review", "members": ["/code-review", "/code-review:code-review", "/pr-review-toolkit:review-pr", "/review"],
+     "note": "Several ways to review a PR. The built-in /code-review and the code-review plugin do the same job; the toolkit adds specialised agents (tests, silent failures, types); /review is gstack's version. Keep the ones you use."},
+    {"title": "Simplifying code", "members": ["/simplify", "code-simplifier:code-simplifier", "pr-review-toolkit:code-simplifier"],
+     "note": "The built-in /simplify and the code-simplifier agents cover the same ground. One of them is usually enough."},
+    {"title": "Writing skills", "members": ["/write-skill", "/skill-creator:skill-creator", "/anthropic-skills:skill-creator", "/document-skills:skill-creator", "/plugin-dev:skill-development"],
+     "note": "Several guides for authoring skills. Pick one."},
+    {"title": "Driving a browser", "members": ["/claude-in-chrome", "/anthropic-skills:chrome-browser", "/anthropic-skills:built-in-browser", "/browse", "/open-gstack-browser"],
+     "note": "Chrome extension, the desktop app's built-in browser and gstack's own Chromium. They drive different browsers, so they only overlap if you never use one of them."}
+  ],
+  "palette": [
+    ["#a5d8ff", "#1f4a6b"], ["#d0bfff", "#45366f"], ["#fcc2d7", "#67294a"], ["#99e9f2", "#135058"],
+    ["#b2f2bb", "#22542b"], ["#ffd8a8", "#643f14"], ["#96f2d7", "#165445"], ["#eebefa", "#5a2a63"],
+    ["#c0eb75", "#3f5214"], ["#bac8ff", "#2e3a73"]
+  ],
+  "fixed_colors": {
+    "Anthropic": ["#ffc9c9", "#6b3434"],
+    "You": ["#ffec99", "#625214"]
+  },
+  "other_color": ["#e9ecf2", "#262c38"]
+}

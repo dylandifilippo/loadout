@@ -1,0 +1,626 @@
+<title>Setup Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: sticky search bar over a stream of topic sections; cards in an auto-fill grid; author colour is the one recurring signal. */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --fg: #151a26;
+  --muted: #5b6377;
+  --line: #dce1eb;
+  --accent: #2a46d1;
+  --accent-soft: #e4e9ff;
+  --warn: #9a4a00;
+  --warn-soft: #fdebd3;
+  --font-display: ui-rounded, "SF Pro Rounded", "Avenir Next", "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1117; --surface: #161a23; --fg: #e6e9f1; --muted: #98a0b4; --line: #272d3b;
+    --accent: #93a6ff; --accent-soft: #1f2747; --warn: #f5b26b; --warn-soft: #3d2a14;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1117; --surface: #161a23; --fg: #e6e9f1; --muted: #98a0b4; --line: #272d3b;
+  --accent: #93a6ff; --accent-soft: #1f2747; --warn: #f5b26b; --warn-soft: #3d2a14;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+[hidden] { display: none !important; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+header.intro { padding-block: 40px 20px; display: grid; gap: 14px; }
+.topline { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+h1 {
+  font: 700 clamp(2rem, 5vw, 3.2rem)/1.02 var(--font-display);
+  letter-spacing: -0.02em; margin: 0; text-wrap: balance;
+}
+.lede { margin: 0; color: var(--muted); max-width: 70ch; }
+.totals {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none;
+  font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem;
+}
+.totals b { color: var(--fg); font-weight: 600; }
+.view-switch {
+  font: 600 0.85rem var(--font-body); color: var(--accent); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer;
+  display: inline-flex; gap: 8px; align-items: center; text-decoration: none;
+}
+.switches { display: flex; flex-wrap: wrap; gap: 8px; }
+.view-switch[aria-current="page"] { background: var(--accent-soft); border-color: var(--accent); }
+.pill.neutral { color: var(--muted); background: var(--bg); border: 1px solid var(--line); }
+.view-switch .n.neutral { background: var(--accent-soft); color: var(--accent); }
+.select {
+  font: 500 0.85rem var(--font-body); color: var(--fg); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; max-width: 100%;
+}
+.projects { display: grid; gap: 14px; padding-top: 22px; }
+.proj-group { display: grid; gap: 4px; }
+.proj-group .usage-title { margin: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.tags li { font: 0.78rem var(--font-mono); background: var(--bg); border: 1px solid var(--line); border-radius: 5px; padding: 2px 7px; overflow-wrap: anywhere; }
+.tags li.off { text-decoration: line-through; color: var(--muted); }
+.view-switch .n {
+  background: var(--warn-soft); color: var(--warn); border-radius: 999px; padding: 0 7px;
+  font-variant-numeric: tabular-nums;
+}
+
+.share { display: grid; gap: 8px; }
+.share-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.bar {
+  display: flex; height: 14px; border-radius: 4px; overflow: hidden;
+  border: 1px solid var(--line); background: var(--surface);
+}
+.bar button { border: 0; padding: 0; margin: 0; cursor: pointer; min-width: 3px; border-right: 1px solid var(--surface); }
+.bar button:last-child { border-right: 0; }
+.bar button[aria-pressed="true"] { outline: 2px solid var(--fg); outline-offset: -2px; }
+
+.toolbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); padding-block: 12px; display: grid; gap: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.search { flex: 1 1 260px; min-width: 0; position: relative; }
+.search input {
+  width: 100%; font: inherit; color: var(--fg); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px 9px 34px;
+}
+.search svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; }
+.search svg path { fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 2px; flex-wrap: wrap; }
+.seg button {
+  font: 500 0.85rem var(--font-body); color: var(--muted); background: transparent;
+  border: 0; border-radius: 6px; padding: 6px 11px; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font: 500 0.8rem var(--font-body); color: var(--fg);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  padding: 3px 10px 3px 6px; font-variant-numeric: tabular-nums;
+}
+.dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line); flex: none; }
+.chip .n { color: var(--muted); }
+.chip[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.more { font: 500 0.8rem var(--font-body); color: var(--accent); background: none; border: 0; cursor: pointer; padding: 3px 6px; }
+.status { font-size: 0.85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.status button {
+  font: inherit; color: var(--accent); background: none; border: 0; cursor: pointer; padding: 0 0 0 6px;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+main { display: grid; gap: 34px; padding-top: 26px; }
+section h2 {
+  font: 600 0.95rem/1.2 var(--font-display); text-transform: uppercase; letter-spacing: 0.05em;
+  margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; text-wrap: balance;
+}
+.count { font: 500 0.8rem var(--font-body); color: var(--muted); font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: 0; }
+.kind-tag {
+  font: 500 0.68rem var(--font-body); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px;
+}
+.grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); align-items: start; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; display: grid; }
+.card > button {
+  all: unset; box-sizing: border-box; cursor: pointer; display: grid; gap: 6px;
+  padding: 12px 14px; border-radius: 10px; min-width: 0;
+}
+.card > button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.card > button:hover .cmd { color: var(--accent); }
+.cmd { font: 500 0.88rem/1.3 var(--font-mono); overflow-wrap: anywhere; color: var(--fg); }
+.desc { color: var(--muted); font-size: 0.88rem; line-height: 1.4; }
+.who { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--muted); justify-self: start; }
+.who .dot { width: 10px; height: 10px; }
+.pill {
+  justify-self: start; font: 600 0.68rem var(--font-body); text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--warn); background: var(--warn-soft); border-radius: 4px; padding: 1px 6px;
+}
+.detail { border-top: 1px solid var(--line); padding: 10px 14px 12px; display: grid; gap: 10px; font-size: 0.86rem; line-height: 1.5; }
+.detail p { margin: 0; overflow-wrap: anywhere; }
+.meta { color: var(--muted); font-size: 0.78rem; }
+.also { color: var(--muted); font-size: 0.8rem; }
+.also code { font-family: var(--font-mono); color: var(--fg); }
+.copy {
+  justify-self: start; font: 500 0.8rem var(--font-body); color: var(--accent);
+  background: var(--accent-soft); border: 0; border-radius: 6px; padding: 6px 10px; cursor: pointer;
+}
+.usage { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.usage-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 6px; }
+.usage li {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; align-items: start;
+  padding: 6px 8px; border-radius: 6px; background: var(--bg);
+}
+.usage code { font: 0.8rem/1.4 var(--font-mono); overflow-wrap: anywhere; min-width: 0; }
+.usage .note { grid-column: 1 / -1; color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+.mini {
+  font: 500 0.72rem var(--font-body); color: var(--accent); background: none; border: 1px solid var(--line);
+  border-radius: 5px; padding: 2px 7px; cursor: pointer;
+}
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 28px; text-align: center; color: var(--muted); display: grid; gap: 12px; justify-items: center; }
+
+.cleanup { display: grid; gap: 34px; padding-top: 22px; }
+.figures { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0; padding: 0; list-style: none; }
+.figures li { display: grid; }
+.figures b { font: 700 1.6rem/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+.figures span { color: var(--muted); font-size: 0.82rem; }
+.findings { display: grid; gap: 10px; }
+.finding { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.finding h3 { margin: 0; font: 600 1rem/1.3 var(--font-display); display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.finding p { margin: 0; max-width: 75ch; }
+.advice { border-left: 3px solid var(--accent); padding-left: 10px; }
+.copies { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.copies li { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 0.85rem; min-width: 0; }
+.copies code { font: 0.82rem var(--font-mono); overflow-wrap: anywhere; }
+.src { color: var(--muted); font-size: 0.78rem; }
+.copies .d { flex-basis: 100%; color: var(--muted); font-size: 0.8rem; }
+.weights { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.weights li { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr) 5.5rem; gap: 10px; align-items: center; font-size: 0.85rem; }
+.weights .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.weights .track { height: 10px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.weights .fill { height: 100%; background: var(--accent); border-radius: 3px; }
+.weights .fill.dim { background: var(--muted); opacity: 0.5; }
+.weights .val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .weights li { grid-template-columns: minmax(0, 1fr) 5rem; }
+  .weights .track { grid-column: 1 / -1; grid-row: 2; }
+}
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 0.85rem; z-index: 20;
+  max-width: calc(100% - 32px);
+}
+footer { margin-top: 48px; color: var(--muted); font-size: 0.8rem; }
+footer code { font-family: var(--font-mono); }
+@media (prefers-reduced-motion: no-preference) { .card > button .cmd { transition: color 120ms; } }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <div class="topline">
+      <h1>Setup Map</h1>
+      <nav class="switches" aria-label="Views">
+        <a class="view-switch" id="to-map" href="#map">Map</a>
+        <a class="view-switch" id="to-projects" href="#projects">Projects</a>
+        <a class="view-switch" id="to-cleanup" href="#cleanup">Cleanup</a>
+      </nav>
+    </div>
+    <p class="lede">Every skill, plugin, MCP server and agent in your Claude Code setup, grouped by topic and coloured by author. Click a card to see its variants and copy a command.</p>
+    <ul class="totals" id="totals"></ul>
+    <div class="share">
+      <span class="share-label">Share by author · whole setup</span>
+      <div class="bar" id="bar" role="group" aria-label="Share of items by author"></div>
+    </div>
+  </header>
+
+  <div id="browse">
+    <div class="toolbar">
+      <div class="row">
+        <label class="search" for="q">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M7 12.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11ZM11 11l3.5 3.5"/></svg>
+          <input id="q" type="search" placeholder="Search: review, figma, video…" autocomplete="off" aria-label="Search the setup">
+        </label>
+        <div class="seg" id="kinds" role="group" aria-label="Type"></div>
+        <select class="select" id="proj" aria-label="Show what loads in a project"></select>
+      </div>
+      <div class="chips" id="authors" role="group" aria-label="Author"></div>
+      <div class="status" id="status" aria-live="polite"></div>
+    </div>
+    <main id="list"></main>
+  </div>
+  <div class="cleanup" id="cleanup" hidden></div>
+  <div class="projects" id="projects" hidden></div>
+  <footer id="foot"></footer>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script type="application/json" id="data">__DATA__</script>
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById('data').textContent);
+  const CL = DATA.cleanup;
+  const KINDS = [['all', 'All'], ['skill', 'Skills'], ['plugin', 'Plugins'], ['mcp', 'MCP servers'], ['agent', 'Agents']];
+  const KIND_LABEL = { skill: 'Skills', plugin: 'Plugins', mcp: 'MCP', agent: 'Agents' };
+  const STATUS = CL.status_label || {};
+  const VIS = CL.visibility_label || {};
+  const day = (ms) => new Date(ms).toISOString().slice(0, 10);
+  const usedText = (i) => (i.uses ? `used ${i.uses} time${i.uses > 1 ? 's' : ''}, last on ${day(i.last_used)}`
+    : (DATA.usage_since ? `never used since ${day(DATA.usage_since)}` : 'never used'));
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, props = {}, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props);
+    kids.flat().forEach((k) => k != null && k !== false && n.append(k));
+    return n;
+  };
+
+  const authorKey = new Map(Object.keys(DATA.colors).map((a, n) => [a, `--a-${n}`]));
+  const css = (mode) => [...authorKey].map(([a, v]) => `${v}: ${DATA.colors[a][mode]};`).join(' ') + ` --a-other: ${DATA.other[mode]};`;
+  const style = document.createElement('style');
+  style.textContent = `:root { ${css(0)} }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { ${css(1)} } }
+    :root[data-theme="dark"] { ${css(1)} }`;
+  document.head.append(style);
+  const colorOf = (a) => `var(${authorKey.get(a) || '--a-other'})`;
+  const dot = (a) => { const d = el('span', { className: 'dot' }); d.style.background = colorOf(a); return d; };
+
+  const items = [];
+  DATA.sections.forEach((sec, si) => sec.items.forEach((s) => items.push({
+    ...s, si,
+    hay: [s.cmd, s.desc, s.long, s.author, sec.title, s.market, ...(s.projects || []), ...(s.scopes || []),
+      ...(s.usage || []).map((u) => u.cmd), ...(s.subs || []).map((u) => u.cmd)].join(' ').toLowerCase(),
+  })));
+
+  const bare = (cmd) => cmd.split(' ')[0];
+  const twins = new Map();
+  CL.identical.forEach((b) => b.skills.forEach((s) => s.copies.forEach((c) => {
+    twins.set(c.cmd, s.copies.filter((o) => o.cmd !== c.cmd));
+  })));
+  const dupesOf = (i) => (i.kind === 'plugin'
+    ? (i.subs || []).filter((u) => twins.has(bare(u.cmd))).length
+    : (twins.has(i.cmd) ? 1 : 0));
+  const findingCount = CL.identical.reduce((n, b) => n + b.skills.length, 0) + CL.same_name.length + CL.overlaps.length;
+  const fmt = (n) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n));
+  const where = (i) => [
+    i.status === 'projects' && i.projects?.length ? `only in ${i.projects.join(', ')}` : STATUS[i.status] || '',
+    i.disabled_in?.length ? `turned off in ${i.disabled_in.join(', ')}` : null,
+  ].filter(Boolean).join(' · ');
+
+  const state = { q: '', kind: 'all', author: null, project: '', showAllAuthors: false, open: new Set() };
+  const PROJECTS = DATA.projects || [];
+  const loadsIn = (i, p) => (i.status === 'everywhere' && !(i.disabled_in || []).includes(p)) || (i.projects || []).includes(p);
+
+  const byKind = (k) => items.filter((i) => i.kind === k).length;
+  $('totals').append(
+    el('li', {}, 'Whole setup:'),
+    el('li', {}, el('b', { textContent: items.length }), ' items'),
+    ...['skill', 'plugin', 'mcp', 'agent'].map((k) => el('li', {}, el('b', { textContent: byKind(k) }), ' ' + KIND_LABEL[k].toLowerCase())));
+  $('foot').append(`Generated ${DATA.generated} by the setup-map skill. Nothing on this page left your machine to build it.`);
+
+  const authorCounts = (list) => {
+    const m = new Map();
+    list.forEach((i) => m.set(i.author, (m.get(i.author) || 0) + 1));
+    return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  };
+  const allAuthors = authorCounts(items);
+  allAuthors.forEach(([a, n]) => {
+    const b = el('button', { type: 'button', title: `${a}: ${n}` });
+    b.setAttribute('aria-label', `${a}, ${n} items`);
+    b.style.flex = String(n);
+    b.style.background = colorOf(a);
+    b.dataset.author = a;
+    b.addEventListener('click', () => setAuthor(a));
+    $('bar').append(b);
+  });
+
+  const matches = (i, ignore) =>
+    (!state.project || loadsIn(i, state.project)) &&
+    (ignore === 'kind' || state.kind === 'all' || i.kind === state.kind) &&
+    (ignore === 'author' || !state.author || i.author === state.author) &&
+    (!state.q || state.q.split(/\s+/).every((w) => i.hay.includes(w)));
+
+  function setAuthor(a) { state.author = state.author === a ? null : a; render(); }
+
+  function renderKinds() {
+    $('kinds').replaceChildren(...KINDS.map(([k, label]) => {
+      const n = items.filter((i) => (k === 'all' || i.kind === k) && matches(i, 'kind')).length;
+      const b = el('button', { type: 'button', textContent: `${label} ${n}` });
+      b.setAttribute('aria-pressed', String(state.kind === k));
+      b.addEventListener('click', () => { state.kind = k; render(); });
+      return b;
+    }));
+  }
+
+  function renderAuthors() {
+    $('bar').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.author === state.author)));
+    const counts = new Map(authorCounts(items.filter((i) => matches(i, 'author'))));
+    const LIMIT = 10;
+    const list = state.showAllAuthors ? allAuthors.slice() : allAuthors.slice(0, LIMIT);
+    if (state.author && !list.some(([a]) => a === state.author)) list.push(allAuthors.find(([a]) => a === state.author));
+    const chips = list.map(([a]) => {
+      const b = el('button', { type: 'button', className: 'chip' }, dot(a), a, ' ', el('span', { className: 'n', textContent: counts.get(a) || 0 }));
+      b.setAttribute('aria-pressed', String(state.author === a));
+      b.addEventListener('click', () => setAuthor(a));
+      return b;
+    });
+    if (allAuthors.length > LIMIT) {
+      const more = el('button', { type: 'button', className: 'more', textContent: state.showAllAuthors ? 'Fewer authors' : `All ${allAuthors.length} authors` });
+      more.addEventListener('click', () => { state.showAllAuthors = !state.showAllAuthors; renderAuthors(); });
+      chips.push(more);
+    }
+    $('authors').replaceChildren(...chips);
+  }
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast');
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.hidden = true; }, 1800);
+  }
+
+  function copy(text, node) {
+    const fallback = () => {
+      const r = document.createRange();
+      r.selectNodeContents(node);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      toast('Selected. Press Ctrl+C or ⌘C to copy.');
+    };
+    try { navigator.clipboard.writeText(text).then(() => toast(`Copied ${text}`), fallback); } catch { fallback(); }
+  }
+
+  function usageList(title, list) {
+    if (!list || !list.length) return null;
+    return el('div', {},
+      el('p', { className: 'usage-title', textContent: title }),
+      el('ul', { className: 'usage' }, list.map((u) => {
+        const code = el('code', { textContent: u.cmd });
+        const b = el('button', { type: 'button', className: 'mini', textContent: 'Copy' });
+        b.addEventListener('click', () => copy(u.cmd, code));
+        const extra = [u.visibility && u.visibility !== 'model' ? VIS[u.visibility] : null,
+          u.uses ? `used ${u.uses}×` : null].filter(Boolean).join(' · ');
+        return el('li', {}, code, b,
+          u.note || extra ? el('span', { className: 'note', textContent: [u.note, extra].filter(Boolean).join(' · ') }) : null,
+          twins.has(bare(u.cmd)) ? el('span', { className: 'note' }, el('span', { className: 'pill', textContent: 'Installed twice' })) : null);
+      })));
+  }
+
+  function card(i) {
+    const key = `${i.si}:${i.id}`;
+    const open = state.open.has(key);
+    const cmd = el('span', { className: 'cmd', textContent: i.cmd });
+    const flagged = dupesOf(i);
+    const head = el('button', { type: 'button' }, cmd,
+      el('span', { className: 'desc', textContent: i.desc }),
+      flagged ? el('span', { className: 'pill', textContent: i.kind === 'plugin' ? `${flagged} installed twice` : 'Installed twice' }) : null,
+      i.visibility === 'user' ? el('span', { className: 'pill neutral', textContent: 'You only' }) : null,
+      i.visibility === 'off' ? el('span', { className: 'pill neutral', textContent: 'Turned off' }) : null,
+      el('span', { className: 'who' }, dot(i.author), i.author));
+    head.setAttribute('aria-expanded', String(open));
+    const node = el('article', { className: 'card' }, head);
+    head.addEventListener('click', () => {
+      open ? state.open.delete(key) : state.open.add(key);
+      const next = card(i);
+      node.replaceWith(next);
+      next.querySelector('button').focus();
+    });
+    if (open) {
+      const twin = twins.get(i.cmd);
+      const btn = el('button', { type: 'button', className: 'copy', textContent: i.kind === 'skill' ? 'Copy command' : 'Copy name' });
+      btn.addEventListener('click', () => copy(i.cmd, cmd));
+      const meta = [DATA.sections[i.si].title, i.source, where(i), VIS[i.visibility] || null,
+        (i.kind === 'skill' || (i.kind === 'plugin' && (i.subs || []).length)) ? usedText(i) : null,
+        i.version ? `v${i.version}` : null].filter(Boolean).join(' · ');
+      node.append(el('div', { className: 'detail' },
+        i.long && i.long !== i.desc ? el('p', { textContent: i.long }) : null,
+        twin ? el('p', { className: 'also' }, 'Also installed as ', twin.map((t, k) => [k ? ', ' : '', el('code', { textContent: t.cmd }), ` (${t.source})`])) : null,
+        usageList('Usage', i.usage),
+        usageList(`Commands and skills in this plugin (${(i.subs || []).length})`, i.subs),
+        el('p', { className: 'meta', textContent: meta }),
+        btn));
+    }
+    return node;
+  }
+
+  function renderProjectSelect() {
+    const sel = $('proj');
+    const count = (p) => items.filter((i) => loadsIn(i, p)).length;
+    sel.replaceChildren(el('option', { value: '', textContent: 'All projects' }),
+      ...PROJECTS.map((p) => el('option', { value: p.name, textContent: `${p.name} · ${count(p.name)} items load here` })));
+    sel.value = state.project;
+    sel.hidden = !PROJECTS.length;
+  }
+
+  function reset() {
+    state.q = ''; state.kind = 'all'; state.author = null;
+    $('q').value = '';
+    render();
+  }
+
+  function allProjects() {
+    state.project = '';
+    go(mapHash());
+  }
+
+  function render() {
+    $('to-map').href = mapHash();
+    renderProjectSelect();
+    renderKinds();
+    renderAuthors();
+    const shown = items.filter((i) => matches(i));
+    const groups = new Map();
+    shown.forEach((i) => { if (!groups.has(i.si)) groups.set(i.si, []); groups.get(i.si).push(i); });
+    const status = $('status');
+    const scope = state.project ? items.filter((i) => loadsIn(i, state.project)).length : items.length;
+    status.replaceChildren(state.project
+      ? `Showing ${shown.length} of the ${scope} items that load in ${state.project}`
+      : `Showing ${shown.length} of ${scope}`);
+    const filtered = state.q || state.kind !== 'all' || state.author;
+    if (filtered) {
+      const clear = el('button', { type: 'button', textContent: 'Clear search and filters' });
+      clear.addEventListener('click', reset);
+      status.append(clear);
+    }
+    if (state.project) {
+      const all = el('button', { type: 'button', textContent: 'Show all projects' });
+      all.addEventListener('click', allProjects);
+      status.append(all);
+    }
+    if (!shown.length) {
+      const btn = el('button', { type: 'button', className: 'copy', textContent: 'Clear search and filters' });
+      btn.addEventListener('click', reset);
+      $('list').replaceChildren(el('div', { className: 'empty' }, el('p', { textContent: `Nothing matches${state.q ? ` “${state.q}”` : ''} with these filters.` }), btn));
+      return;
+    }
+    $('list').replaceChildren(...[...groups].map(([si, group]) => {
+      const sec = DATA.sections[si];
+      return el('section', {},
+        el('h2', {}, sec.title, el('span', { className: 'kind-tag', textContent: KIND_LABEL[sec.kind] }), el('span', { className: 'count', textContent: group.length })),
+        el('div', { className: 'grid' }, group.map(card)));
+    }));
+  }
+
+  function copiesList(copies, withDesc) {
+    return el('ul', { className: 'copies' }, copies.map((c) => el('li', {},
+      el('code', { textContent: c.cmd }),
+      el('span', { className: 'src', textContent: [c.source, c.status !== 'everywhere' ? STATUS[c.status] : null,
+        c.visibility && c.visibility !== 'model' ? VIS[c.visibility] : null].filter(Boolean).join(' · ') }),
+      withDesc && c.desc ? el('span', { className: 'd', textContent: c.desc }) : null)));
+  }
+
+  function renderCleanup() {
+    const maxW = Math.max(1, ...CL.by_source.map((w) => w.tokens));
+    const twiceCount = CL.identical.reduce((n, b) => n + b.skills.length, 0);
+    const section = (title, count, intro, body) => el('section', {},
+      el('h2', {}, title, el('span', { className: 'count', textContent: count })),
+      intro ? el('p', { className: 'lede', textContent: intro }) : null,
+      body);
+    $('cleanup').replaceChildren(...[
+      el('p', { className: 'lede', textContent: 'Covers your whole setup, whatever project the map is filtered to. Skills that Claude Code loads more than once, or that do the same job. Each skill puts its description into the context of every session where it loads, so a duplicate costs tokens for nothing. Token figures are estimates (description length divided by 4) and Claude Code can shorten long descriptions, so read them as upper bounds.' }),
+      el('ul', { className: 'figures' },
+        el('li', {}, el('b', { textContent: CL.listed }), el('span', { textContent: 'skills loaded in every session' })),
+        el('li', {}, el('b', { textContent: '~' + fmt(CL.listed_tokens) }), el('span', { textContent: 'tokens of their descriptions' })),
+        el('li', {}, el('b', { textContent: '~' + fmt(CL.duplicate_tokens) }), el('span', { textContent: 'tokens in duplicates loaded everywhere' })),
+        el('li', {}, el('b', { textContent: CL.hidden }), el('span', { textContent: 'skills you keep for yourself (hidden from Claude)' }))),
+      section('Installed twice', twiceCount, null,
+        CL.identical.length ? el('div', { className: 'findings' }, CL.identical.map((b) => {
+          const t = b.skills.reduce((m, s) => m + s.extra_tokens, 0);
+          return el('article', { className: 'finding' },
+            el('h3', {}, b.sources.join(' + '), el('span', { className: 'count', textContent: `${b.skills.length} skill${b.skills.length > 1 ? 's' : ''} · ~${fmt(t)} extra tokens` })),
+            el('p', { className: 'advice', textContent: b.note }),
+            el('div', { className: 'findings' }, b.skills.map((s) => copiesList(s.copies))));
+        })) : el('p', { className: 'lede', textContent: 'No skill is installed twice.' })),
+      !CL.has_usage ? null : section('Never used', CL.never_used.length + CL.idle_plugins.length,
+        `Skills Claude sees in every session that you have never run${DATA.usage_since ? ` since Claude Code started counting (${day(DATA.usage_since)})` : ''}, heaviest first. Claude can still pick one on its own without it being counted here as your use, so check before removing. Plugins appear when none of their skills or commands was ever used; their agents, MCP servers and hooks are not counted.`,
+        el('div', { className: 'findings' },
+          CL.never_used.length ? el('article', { className: 'finding' },
+            el('h3', {}, 'Skills', el('span', { className: 'count', textContent: `${CL.never_used.length} · ~${fmt(CL.never_used.reduce((n, e) => n + e.tokens, 0))} tokens` })),
+            el('ul', { className: 'copies' }, CL.never_used.map((e) => el('li', {}, el('code', { textContent: e.cmd }), el('span', { className: 'src', textContent: `${e.source} · ~${fmt(e.tokens)} tokens` }))))) : null,
+          CL.idle_plugins.length ? el('article', { className: 'finding' },
+            el('h3', {}, 'Plugins', el('span', { className: 'count', textContent: `${CL.idle_plugins.length} · ~${fmt(CL.idle_plugins.reduce((n, e) => n + e.tokens, 0))} tokens` })),
+            el('ul', { className: 'copies' }, CL.idle_plugins.map((e) => el('li', {}, el('code', { textContent: e.cmd }), el('span', { className: 'src', textContent: `${e.skills} skills and commands · ~${fmt(e.tokens)} tokens` }))))) : null)),
+      section('Same name, different text', CL.same_name.length,
+        'Two skills share a name but not their description: two versions of one skill, or two unrelated skills competing for the same trigger. Check which one you use.',
+        el('div', { className: 'findings' }, CL.same_name.map((g) => el('article', { className: 'finding' }, el('h3', {}, g.name), copiesList(g.copies, true))))),
+      section('Similar purpose', CL.overlaps.length, null,
+        el('div', { className: 'findings' }, CL.overlaps.map((o) => el('article', { className: 'finding' },
+          el('h3', {}, o.title, el('span', { className: 'count', textContent: `${o.members.length} options` })),
+          el('ul', { className: 'copies' }, o.members.map((m) => el('li', {}, el('code', { textContent: m })))),
+          el('p', { className: 'advice', textContent: o.note }))))),
+      section('Heaviest sources', 'by estimated tokens',
+        'Where the description weight comes from. Sources loaded everywhere come first; the greyed ones only load in some projects, or not at all. A rarely used source near the top is the best thing to remove or limit to the projects that need it.',
+        el('ul', { className: 'weights' }, CL.by_source.slice(0, 18).map((w) => {
+          const fill = el('div', { className: 'fill' + (w.status === 'everywhere' ? '' : ' dim') });
+          fill.style.width = `${(w.tokens / maxW) * 100}%`;
+          const parts = [w.skills ? `${w.skills} skill${w.skills > 1 ? 's' : ''}` : null, w.agents ? `${w.agents} agent${w.agents > 1 ? 's' : ''}` : null].filter(Boolean).join(', ');
+          const label = `${w.source} (${parts})${w.status === 'everywhere' ? '' : ' · ' + STATUS[w.status]}`;
+          return el('li', {}, el('span', { className: 'label', title: label, textContent: label }),
+            el('div', { className: 'track' }, fill), el('span', { className: 'val', textContent: '~' + fmt(w.tokens) }));
+        }))),
+    ].filter(Boolean));
+  }
+
+  function renderProjects() {
+    const byId = new Map(items.map((i) => [i.id, i]));
+    const groups = [['plugin', 'Plugins turned on here'], ['mcp', 'MCP servers'], ['skill', 'Skills and commands of its own'], ['agent', 'Agents, from its plugins or its own folder']];
+    $('projects').replaceChildren(
+      el('p', { className: 'lede', textContent: 'What each project adds to, or removes from, what loads everywhere. Opening Claude Code in a project loads everything marked "loaded everywhere", plus what is listed here, minus what is turned off.' }),
+      PROJECTS.length ? el('div', { className: 'findings' }, PROJECTS.map((p) => {
+        const own = p.items.map((id) => byId.get(id)).filter(Boolean);
+        const off = p.disabled.map((id) => byId.get(id)).filter(Boolean);
+        const show = el('button', { type: 'button', className: 'copy', textContent: 'Show everything that loads here' });
+        show.addEventListener('click', () => { state.project = p.name; go(mapHash()); });
+        return el('article', { className: 'finding' },
+          el('h3', {}, p.name, el('span', { className: 'count', textContent: `${items.filter((i) => loadsIn(i, p.name)).length} items load here` })),
+          el('span', { className: 'src', textContent: p.path }),
+          groups.map(([kind, title]) => {
+            const list = own.filter((i) => i.kind === kind);
+            return list.length ? el('div', { className: 'proj-group' }, el('p', { className: 'usage-title', textContent: `${title} (${list.length})` }),
+              el('ul', { className: 'tags' }, list.map((i) => el('li', { textContent: i.cmd.split('@')[0] })))) : null;
+          }),
+          off.length ? el('div', { className: 'proj-group' }, el('p', { className: 'usage-title', textContent: `Turned off here (${off.length})` }),
+            el('ul', { className: 'tags' }, off.map((i) => el('li', { className: 'off', textContent: i.cmd.split('@')[0] })))) : null,
+          show);
+      })) : el('p', { className: 'lede', textContent: 'No project has its own plugins, MCP servers, skills or agents.' }));
+  }
+
+  const slug = (name) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const bySlug = new Map(PROJECTS.map((p) => [slug(p.name), p.name]));
+  const mapHash = () => (state.project ? `#map-${slug(state.project)}` : '#map');
+  let lastView = null;
+
+  function go(hash) {
+    if (location.hash === hash) route();
+    else location.hash = hash;
+  }
+
+  function route() {
+    const h = location.hash;
+    let view = 'browse';
+    if (h === '#cleanup') view = 'cleanup';
+    else if (h === '#projects') view = 'projects';
+    else if (h.startsWith('#map-')) state.project = bySlug.get(h.slice(5)) || '';
+    else if (h === '#map') state.project = '';
+    ['browse', 'cleanup', 'projects'].forEach((v) => { $(v).hidden = v !== view; });
+    if (view === 'browse') render();
+    if (lastView !== null && view !== lastView) window.scrollTo(0, 0);
+    lastView = view;
+    const tabs = { browse: 'to-map', projects: 'to-projects', cleanup: 'to-cleanup' };
+    Object.entries(tabs).forEach(([v, id]) => {
+      if (v === view) $(id).setAttribute('aria-current', 'page'); else $(id).removeAttribute('aria-current');
+    });
+    $('to-map').replaceChildren(state.project ? `Map · ${state.project}` : 'Map');
+    $('to-map').href = mapHash();
+    $('to-cleanup').replaceChildren('Cleanup', el('span', { className: 'n', textContent: findingCount }));
+    $('to-projects').replaceChildren('Projects', el('span', { className: 'n neutral', textContent: PROJECTS.length }));
+    $('to-projects').hidden = !PROJECTS.length;
+  }
+
+  $('q').addEventListener('input', (e) => { state.q = e.target.value.trim().toLowerCase(); render(); });
+  window.addEventListener('hashchange', route);
+  $('proj').addEventListener('change', (e) => { state.project = e.target.value; go(mapHash()); });
+  renderCleanup();
+  renderProjects();
+  render();
+  route();
+})();
+</script>

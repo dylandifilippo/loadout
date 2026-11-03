@@ -2,6 +2,8 @@
 
 See what Claude Code carries into every session, and trim what eats your context.
 
+![The Loadout map: every skill, plugin, MCP server and agent as a card, grouped by topic and coloured by author, with search, type, project and author filters](docs/map.png)
+
 Every skill, plugin, MCP server and agent you install adds its description to Claude's context, in
 every session or only in some projects. After a few months it gets hard to say what you have, where it
 came from, what loads where, or why the same skill shows up twice. Loadout reads your Claude Code
